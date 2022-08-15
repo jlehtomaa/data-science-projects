@@ -20,6 +20,38 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import GridSearchCV
 
+BANK_DATA_PTH = "./data/bank_data.csv"
+
+CATEGORICAL_VARS = [
+    'Gender',
+    'Education_Level',
+    'Marital_Status',
+    'Income_Category',
+    'Card_Category'
+]
+
+FEATURE_NAMES = [
+    'Customer_Age',
+    'Dependent_count',
+    'Months_on_book',
+    'Total_Relationship_Count',
+    'Months_Inactive_12_mon',
+    'Contacts_Count_12_mon',
+    'Credit_Limit',
+    'Total_Revolving_Bal',
+    'Avg_Open_To_Buy',
+    'Total_Amt_Chng_Q4_Q1',
+    'Total_Trans_Amt',
+    'Total_Trans_Ct',
+    'Total_Ct_Chng_Q4_Q1',
+    'Avg_Utilization_Ratio',
+    'Gender_Churn',
+    'Education_Level_Churn',
+    'Marital_Status_Churn',
+    'Income_Category_Churn',
+    'Card_Category_Churn'
+]
+
 ScikitModelType = Union[RandomForestClassifier, LogisticRegression]
 sns.set()
 
@@ -341,40 +373,8 @@ if __name__ == "__main__":
 
     # DATA IMPORT
     # -----------
-    BANK_DATA_PTH = "./data/bank_data.csv"
     BANK_DATA = import_data(pth=BANK_DATA_PTH)
     perform_eda(BANK_DATA)
-
-    CATEGORICAL_VARS = [
-        'Gender',
-        'Education_Level',
-        'Marital_Status',
-        'Income_Category',
-        'Card_Category'
-    ]
-
-    FEATURE_NAMES = [
-        'Customer_Age',
-        'Dependent_count',
-        'Months_on_book',
-        'Total_Relationship_Count',
-        'Months_Inactive_12_mon',
-        'Contacts_Count_12_mon',
-        'Credit_Limit',
-        'Total_Revolving_Bal',
-        'Avg_Open_To_Buy',
-        'Total_Amt_Chng_Q4_Q1',
-        'Total_Trans_Amt',
-        'Total_Trans_Ct',
-        'Total_Ct_Chng_Q4_Q1',
-        'Avg_Utilization_Ratio',
-        'Gender_Churn',
-        'Education_Level_Churn',
-        'Marital_Status_Churn',
-        'Income_Category_Churn',
-        'Card_Category_Churn'
-    ]
-
 
     # FEATURE ENGINEERING
     # -------------------

@@ -35,12 +35,6 @@ def fixture_raw_df(data_path):
         raise error
     return data
 
-# @pytest.fixture(name="clean_df", scope="module")
-# def fixture_clean_df(raw_df, categorical_lst):
-#     """Fixture for clean (=encoded) training data dataframe."""
-#     clean_df = cl.category_mean_encoder(raw_df, categorical_lst)
-#     return clean_df
-
 @pytest.fixture(name="train_data_split", scope="module")
 def fixture_train_data_split(raw_df, categorical_lst, feature_names):
     """Fixture for clean (=encoded) training data dataframe."""

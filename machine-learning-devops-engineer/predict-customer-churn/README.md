@@ -1,14 +1,11 @@
 # Predict Customer Churn
 
-- Project **Predict Customer Churn** of ML DevOps Engineer Nanodegree Udacity
+Project **Predict Customer Churn** of ML DevOps Engineer Nanodegree by Udacity.
 
 ## Project Description
 
-Your project description here.
-
-## Files and data description
-
-Overview of the files and data present in the root directory. 
+Train two models to predict which credit card customers are likely to churn.
+The two models considered are a scikit learn random forest classifier and a logistic regression model.
 
 ## Running the analysis (with poetry and pyenv)
 
@@ -27,11 +24,21 @@ pyenv activate predict-customer-churn-env
 Switch to the project folder. Then, install dependencies:
 
 ```bash
-poetry add $(cat requirements_py3.8.txt)
+poetry add $(cat requirements.txt)
 ```
 
-If errors occur, updating the pip for poetry often help: ```poetry run pip install --upgrade pip```.
+If errors occur, updating the pip for poetry often helps: ```poetry run pip install --upgrade pip```.
 
+Run all tests via:
 
+```bash
+pytest churn_script_logging_and_tests.py
+```
+
+Run the main training script with:
+
+```bash
+python churn_library.py
+```
 
 

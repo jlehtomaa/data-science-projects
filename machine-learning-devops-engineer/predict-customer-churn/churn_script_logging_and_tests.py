@@ -1,6 +1,14 @@
 """
-This module contains tests to check all functions in the churn_library.py
-module.
+This module runs unit tests on all functions specified in the churn_library.py.
+The logging details are specified in the pytest.ini file (in the same
+directory) and the final logs are stored to the ./logs folder.
+
+By default, the logging level is set to INFO.
+To run the test, switch to the project root folder and run in terminal:
+pytest churn_script_logging_and_tests.py
+
+Author: JL
+Date created: 2022-08-16
 """
 import os
 import logging

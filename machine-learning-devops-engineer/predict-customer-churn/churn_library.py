@@ -1,6 +1,10 @@
 """
-Train a random forest classifier and a logistic regression model on the
-Kaggle credit card customer churn rate dataset using Scikit learn.
+This module trains two Scikit learn models on a Kaggle dataset to predict
+the rate of credit card customer churn. The two models are a random forest
+classifier and a logistic regression model.
+
+Author: JL
+Date created: 2022-08-16
 """
 
 import os
@@ -127,7 +131,7 @@ def perform_eda(data, image_pth="./images/eda/"):
 
         # Heatmap.
         elif var == "heatmap_all":
-            sns.heatmap(data.corr(), annot=False, cmap='Dark2_r', linewidths = 2)
+            sns.heatmap(data.corr(), annot=False, cmap='Dark2_r', linewidths=2)
 
         else:
             print(f"No plotting instructions specified for '{var}'. Passing.")

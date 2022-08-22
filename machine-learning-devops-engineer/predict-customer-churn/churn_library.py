@@ -14,7 +14,6 @@ import joblib
 import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
-sns.set()
 
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import plot_roc_curve, classification_report
@@ -22,6 +21,7 @@ from sklearn.metrics import plot_roc_curve, classification_report
 from sklearn.linear_model import LogisticRegression
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import GridSearchCV
+sns.set()
 
 
 def import_data(pth):
@@ -61,8 +61,6 @@ def perform_eda(data, image_pth, plot_vars):
     -----
     Creates the folder image_pth if does not already exist.
     """
-
-    print("Starting exploratory data analysis...")
 
     num_nans = data.isnull().sum().sum()
     print("Number of missing values:", num_nans)
@@ -134,13 +132,16 @@ def perform_feature_engineering(data, category_lst, feature_lst):
     data : pd.DataFrame
         Initial raw dataset.
 
+    category_lst : list
+        List of categorical features.
+
+    feature_lst : list
+        All feature column names to keep in the analysis.
+
     Returns
     -------
-    x_train, x_test, y_train, y_test : float array-like
+    train_data, test_data : float array-like
         Scikit learn train_test_split outputs.
-
-    info : dict
-        Additional information from the data cleaning process.
     """
 
     data = category_mean_encoder(data, category_lst)
@@ -158,20 +159,20 @@ def make_classification_report(model, test_data, train_data, name, pth):
 
     Parameters
     ----------
-    y_train : float array-like
-        Training response values
+    model : Scikit learn model instance
+        A trained model.
 
-    y_test : float array-like
-        Test response values
+    test_data : tuple float array-like
+        Contains a (x_test, y_test) tuple.
 
-    train_preds : float array-like
-        Predictions from a trained model.
+    train_data : tuple float array-like
+        Contains a (x_train, y_train) tuple.
 
-    test_preds : float array-like
-        Test predictions from a trained model.
+    name : str
+        Name of the model instance.
 
-    model_cfg : ModelConfig
-        A model configuration file.
+    pth : str
+        A location for storing the classification report.
     """
 
     x_test, y_test = test_data
@@ -238,14 +239,14 @@ def plot_roc_curves(names, x_test, y_test, model_pth, fig_pth):
     names : str lst
         List of trained model names.
 
-    model_pth : str
-        Folder to load trained models from.
-
     x_test : float array-like
         Test data features
 
     y_test : float array-like
         Test data labels
+
+    model_pth : str
+        Folder to load trained models from.
 
     fig_pth : str
         Folder to store ROC curves in.
@@ -266,6 +267,7 @@ def main(cfg):
     # ------------------------------------
     paths = cfg["paths"]
     data = import_data(paths["raw_data"])
+    print("Starting exploratory data analysis...")
     perform_eda(data, paths["eda"], cfg["data_processing"]["plot_vars"])
 
     # FEATURE ENGINEERING

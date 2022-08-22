@@ -24,15 +24,13 @@ pyenv activate predict-customer-churn-env
 Switch to the project folder. Then, install dependencies:
 
 ```bash
-poetry add $(cat requirements.txt)
+poetry install
 ```
-
-If errors occur, updating the pip for poetry often helps: ```poetry run pip install --upgrade pip```.
 
 Run all tests via:
 
 ```bash
-pytest churn_script_logging_and_tests.py
+pytest tests.py
 ```
 
 Run the main training script with:
@@ -40,5 +38,7 @@ Run the main training script with:
 ```bash
 python churn_library.py
 ```
+
+The Hydra configuration file in the ```conf``` folder specifies all training hyperparameters. The file ```pytest.ini``` defines the test script logger.
 
 

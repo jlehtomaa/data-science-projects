@@ -8,14 +8,13 @@ Date created: 2022-08-16
 """
 
 import os
-from typing import Union
-from dataclasses import dataclass
 
+import hydra
 import joblib
-import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
+sns.set()
 
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import plot_roc_curve, classification_report
@@ -24,51 +23,6 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import GridSearchCV
 
-BANK_DATA_PTH = "./data/bank_data.csv"
-
-CATEGORICAL_VARS = [
-    'Gender',
-    'Education_Level',
-    'Marital_Status',
-    'Income_Category',
-    'Card_Category'
-]
-
-FEATURE_NAMES = [
-    'Customer_Age',
-    'Dependent_count',
-    'Months_on_book',
-    'Total_Relationship_Count',
-    'Months_Inactive_12_mon',
-    'Contacts_Count_12_mon',
-    'Credit_Limit',
-    'Total_Revolving_Bal',
-    'Avg_Open_To_Buy',
-    'Total_Amt_Chng_Q4_Q1',
-    'Total_Trans_Amt',
-    'Total_Trans_Ct',
-    'Total_Ct_Chng_Q4_Q1',
-    'Avg_Utilization_Ratio',
-    'Gender_Churn',
-    'Education_Level_Churn',
-    'Marital_Status_Churn',
-    'Income_Category_Churn',
-    'Card_Category_Churn'
-]
-
-ScikitModelType = Union[RandomForestClassifier, LogisticRegression]
-sns.set()
-
-@dataclass
-class ModelConfig:
-    """Specifies experiment parameters for a scikit learn model."""
-    name: str
-    model: ScikitModelType
-    model_kwargs: dict
-    model_save_pth: str = "./models/"
-    result_save_pth: str = "./images/results/"
-    cross_val_grid: dict = None
-    num_cv: int = None
 
 def import_data(pth):
     """Returns dataframe for the csv found at pth.
@@ -89,7 +43,7 @@ def import_data(pth):
 
     return data
 
-def perform_eda(data, image_pth="./images/eda/"):
+def perform_eda(data, image_pth, plot_vars):
     """Perform exploratory data analysis and save figures to image_pth.
 
     Parameters
@@ -97,16 +51,16 @@ def perform_eda(data, image_pth="./images/eda/"):
     data : pd.Dataframe
         Raw dataset.
 
-    image_pth : std, default="./images/eda/"
+    image_pth : str
         Folder path for storing EDA images.
+
+    plot_vars : lst
+        List of feature names to plot during EDA.
 
     Notes
     -----
     Creates the folder image_pth if does not already exist.
     """
-
-    plot_variables = ["Churn", "Customer_Age", "Marital_Status",
-                      "Total_Trans_Ct", "heatmap_all"]
 
     print("Starting exploratory data analysis...")
 
@@ -114,7 +68,7 @@ def perform_eda(data, image_pth="./images/eda/"):
     print("Number of missing values:", num_nans)
 
     os.makedirs(image_pth, exist_ok=True)
-    for var in plot_variables:
+    for var in plot_vars:
         plt.figure(figsize=(20,10))
 
         # Histograms.
@@ -197,9 +151,9 @@ def perform_feature_engineering(data, category_lst, feature_lst):
     x_train, x_test, y_train, y_test = train_test_split(
         features, labels, test_size= 0.3, random_state=42)
 
-    return x_train, x_test, y_train, y_test
+    return [x_train, y_train], [x_test, y_test]
 
-def classification_report_image(y_train, y_test, train_preds, test_preds, model_cfg):
+def make_classification_report(model, test_data, train_data, name, pth):
     """Make a classification report of a trained model and store it as image.
 
     Parameters
@@ -220,171 +174,125 @@ def classification_report_image(y_train, y_test, train_preds, test_preds, model_
         A model configuration file.
     """
 
+    x_test, y_test = test_data
+    test_preds = model.predict(x_test)
+
+    x_train, y_train = train_data
+    train_preds = model.predict(x_train)
+
     test_report = str(classification_report(y_test, test_preds))
     train_report = str(classification_report(y_train, train_preds))
     font_kwargs = dict(fontdict={'fontsize': 10}, fontproperties = 'monospace')
 
     plt.clf()
     plt.rc('figure', figsize=(5, 5))
-    plt.text(0.01, 1.25, f"{model_cfg.name} train", **font_kwargs)
+    plt.text(0.01, 1.25, f"{name} train", **font_kwargs)
     plt.text(0.01, 0.05, test_report, **font_kwargs)
 
-    plt.text(0.01, 0.6, f"{model_cfg.name} test", **font_kwargs)
+    plt.text(0.01, 0.6, f"{name} test", **font_kwargs)
     plt.text(0.01, 0.7, train_report, **font_kwargs)
     plt.axis('off')
-    plt.savefig(model_cfg.result_save_pth + model_cfg.name + "_report.png")
+    plt.savefig(pth + name + "_report.png")
     plt.close()
 
-def feature_importance_plot(model, feat_cols, save_path):
-    """Plot feature importance ranking.
+def train_model(name, cfg, train_data):
+    """Train a Scikit learn model based on a config file.
 
     Parameters
     ----------
-    model : ScikitModel
-        A trained scikit learn model instance.
 
-    feat_cols : list
-        A list of column names, corresponding to the training data features.
+    name : str
+        A name of the model instance.
 
-    save_path : str
-        A location where to save the image.
+    cfg : dict
+        Model configuration details.
+
+    train_data : tuple
+        Training dataset tuple of the form (x_train, y_train).
     """
 
-    importances = model.feature_importances_
-    num_cols = len(feat_cols)
+    if name == "random_forest":
+        model_cls = RandomForestClassifier
+    elif name == "logistic_regression":
+        model_cls = LogisticRegression
+    else:
+        raise ValueError("Unknown Skicit model class.")
 
-    # Sort feature importances in descending order.
-    indices = np.argsort(importances)[::-1]
+    model = model_cls(**cfg["params"])
 
-    # Rearrange feature names so they match the sorted feature importances.
-    names = [feat_cols[i] for i in indices]
+    param_grid = cfg.get("cv_param_grid")
+    if param_grid is not None:
+        model = GridSearchCV(model, param_grid=dict(param_grid), cv=cfg["num_cv"])
 
-    plt.clf()
-    plt.figure(figsize=(20,5))
-
-    plt.title("Feature Importance")
-    plt.ylabel('Importance')
-
-    plt.bar(range(num_cols), importances[indices])
-
-    plt.xticks(range(num_cols), names, rotation=90)
-    plt.tight_layout()
-    plt.savefig(save_path)
-    plt.close()
-
-
-def train_model(x_train, x_test, y_train, y_test, cfg):
-    """Train a model defined in cfg on the feature-label data.
-
-    Parameters
-    ----------
-    x_train, x_test, y_train, y_test : float array-like
-        Scikit learn train_test_split outputs.
-
-    cfg : ModelConfig
-        Defines a Scikit learn model details.
-
-    Notes
-    -----
-    Stores the best model at cfg.model_save_pth.
-    """
-
-    print(f"Training model {cfg.name}...")
-    model = cfg.model(**cfg.model_kwargs)
-
-    if cfg.cross_val_grid is not None:
-        assert cfg.num_cv is not None, "Specify 'num_cv' for cross validation."
-        model = GridSearchCV(model, param_grid=cfg.cross_val_grid, cv=cfg.num_cv)
-
+    x_train, y_train = train_data
     model.fit(x_train, y_train)
 
-    if cfg.cross_val_grid is not None:
-        model = model.best_estimator_
+    return model if param_grid is None else model.best_estimator_
 
-    # Evaluation metrics
-    train_preds = model.predict(x_train)
-    test_preds = model.predict(x_test)
-
-    classification_report_image(y_train, y_test, train_preds, test_preds, cfg)
-
-    # Save model to file.
-    if cfg.model_save_pth is not None:
-        joblib.dump(model, cfg.model_save_pth + cfg.name + ".pkl")
-
-    print("Finished!")
-    print(f"Stored model to {cfg.model_save_pth}.")
-    print(f"Stored results to {cfg.result_save_pth}")
-    print(30 * "-")
-
-def train_models(x_train, x_test, y_train, y_test, feature_names):
-    """Run the main training loop.
+def plot_roc_curves(names, x_test, y_test, model_pth, fig_pth):
+    """Plot the receiver operating characteristic curves for all models.
 
     Parameters
     ----------
-    x_train, x_test, y_train, y_test : float array-like
-        Scikit learn train_test_split outputs.
 
-    feature_names : list
-        List of feature names, order corresponding to the columns in x_train.
+    names : str lst
+        List of trained model names.
+
+    model_pth : str
+        Folder to load trained models from.
+
+    x_test : float array-like
+        Test data features
+
+    y_test : float array-like
+        Test data labels
+
+    fig_pth : str
+        Folder to store ROC curves in.
     """
 
-    # MODEL CONFIGURATIONS
-    # --------------------
-
-    # Random forest classifier:
-    cross_val_grid = {
-        'n_estimators': [200, 500],
-        'max_features': ['auto', 'sqrt'],
-        'max_depth' : [4,5,100],
-        'criterion' :['gini', 'entropy']}
-
-    rf_config = ModelConfig(
-        name="random_forest",
-        model=RandomForestClassifier,
-        model_kwargs={"random_state": 42},
-        cross_val_grid=cross_val_grid,
-        num_cv=5
-    )
-
-    # Logistic regression:
-    lr_config = ModelConfig(
-        name="logistic_regression",
-        model=LogisticRegression,
-        model_kwargs={"solver": "lbfgs", "max_iter": 3000}
-    )
-
-    for cfg in [rf_config, lr_config]:
-        train_model(x_train, x_test, y_train, y_test, cfg)
-
-    # MODEL ANALYSIS
-    # ---------------
-
-    # Load the best models.
-    rfc = joblib.load("./models/random_forest.pkl")
-    lrc = joblib.load("./models/logistic_regression.pkl")
-
-    feature_importance_plot(
-        rfc, feature_names, "./images/results/forest_importance.png")
-
-    # Make the ROC curve.
     fig, axis = plt.subplots()
-    for model in [rfc, lrc]:
-        plot_roc_curve(model, x_test, y_test, ax=axis, alpha=0.8)
-    fig.savefig("./images/results/roc_curves.png")
+    for name in names:
+        model = joblib.load(model_pth + name + ".pkl")
+        plot_roc_curve(model, x_test, y_test, ax=axis, name=name)
+    fig.savefig(fig_pth + "roc_curves.png")
 
 
-if __name__ == "__main__":
+@hydra.main(version_base=None, config_path="conf", config_name="config")
+def main(cfg):
+    """Run the full experiment based on a hydra config file specifications."""
 
-    # DATA IMPORT
-    # -----------
-    BANK_DATA = import_data(pth=BANK_DATA_PTH)
-    perform_eda(BANK_DATA)
+    # DATA IMPORT AND EXPLORATORY ANALYSIS
+    # ------------------------------------
+    paths = cfg["paths"]
+    data = import_data(paths["raw_data"])
+    perform_eda(data, paths["eda"], cfg["data_processing"]["plot_vars"])
 
     # FEATURE ENGINEERING
     # -------------------
-    X_TRAIN, X_TEST, Y_TRAIN, Y_TEST = perform_feature_engineering(
-        BANK_DATA, CATEGORICAL_VARS, FEATURE_NAMES)
+    preproc = cfg["data_processing"]
+    train_data, test_data = perform_feature_engineering(
+        data, preproc["category_lst"], preproc["feature_lst"])
 
-    # MODEL TRAINING
+    # MODEL TRAININIG
+    # ---------------
+    for name in cfg["models"]:
+        print(f"Training model {name}...")
+        model = train_model(name, cfg["models"][name], train_data)
+
+        make_classification_report(
+            model, test_data, train_data, name, paths["results"])
+
+        # Save best model on file.
+        joblib.dump(model, paths["models"] + name + ".pkl")
+
+    # ANALYSE MODELS
     # --------------
-    train_models(X_TRAIN, X_TEST, Y_TRAIN, Y_TEST, FEATURE_NAMES)
+    models = list(cfg["models"].keys())
+    plot_roc_curves(models, *test_data, paths["models"], paths["results"])
+
+    print("All models trained successfully!")
+
+
+if __name__ == "__main__":
+    main()

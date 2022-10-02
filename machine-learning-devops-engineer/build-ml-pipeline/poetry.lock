@@ -1453,7 +1453,7 @@ testing = ["pytest (>=6)", "pytest-checkdocs (>=2.4)", "pytest-flake8", "pytest-
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.9"
-content-hash = "b937edf7ee6159ddccf10462c7d45d4c3091e1f3380f2d7f66fb9594a989f7a1"
+content-hash = "684922c79c1ad8d1f6abf413c367f7f3261d70b38a10d3e6f22c84e64a6d570d"
 
 [metadata.files]
 antlr4-python3-runtime = [

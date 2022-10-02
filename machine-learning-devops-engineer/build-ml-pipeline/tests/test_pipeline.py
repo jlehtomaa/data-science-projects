@@ -1,6 +1,7 @@
 import pytest
 import numpy as np
 from hydra import initialize, compose
+from hydra.utils import get_original_cwd, to_absolute_path
 from sklearn.model_selection import train_test_split
 
 from build_ml_pipeline.utils import load_data
@@ -23,7 +24,8 @@ def fixture_config():
 @pytest.fixture(name="raw_data", scope="module")
 def fixture_raw_data(config):
     """Fixture for experiment raw dataset."""
-    return load_data(config["paths"]["raw_data"])
+    path = to_absolute_path(config["paths"]["raw_data"])
+    return load_data(path)
 
 
 def test_data_exists(raw_data):

@@ -35,7 +35,7 @@ def main(cfg: DictConfig) -> None:
     log.info("Training model.")
     model = train_model(x_train, y_train, cfg["random_forest"])
 
-    log.info("Saving model + encoders.")
+    log.info("Saving model and encoders.")
     save(model, encoder, lab_bin, cfg["paths"]["model"])
 
     log.info("Calculating performance metrics.")

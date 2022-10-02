@@ -15,6 +15,7 @@ jupyterlab = "^3.4.7"
 fastapi = "^0.85.0"
 uvicorn = "^0.18.3"
 hydra-core = "^1.2.0"
+flake8 = "^5.0.4"
 
 [tool.poetry.dev-dependencies]
 

@@ -40,7 +40,7 @@ jobs:
 
       - name: Run all unit tests by triggering pytest on push.
         working-directory: ./machine-learning-devops-engineer/build-ml-pipeline/
-        run: poetry run pytest
+        run: poetry run pytest -vv
         
       - name: Lint with flake8 on push.
         working-directory: ./machine-learning-devops-engineer/build-ml-pipeline/

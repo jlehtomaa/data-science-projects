@@ -25,8 +25,13 @@ jobs:
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v3
+      
+      - name: Setup environment
+        working-directory: ./machine-learning-devops-engineer/build-ml-pipeline/
+        run: |
+          python -m pip install --upgrade pip
+          pip install pytest flake8
 
-      # Runs a single command using the runners shell
       - name: Run all unit tests by triggering pytest on push.
         working-directory: ./machine-learning-devops-engineer/build-ml-pipeline/
-        run: pytest
+        run: pytest tests -vv

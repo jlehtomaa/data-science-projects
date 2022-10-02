@@ -41,3 +41,10 @@ jobs:
       - name: Run all unit tests by triggering pytest on push.
         working-directory: ./machine-learning-devops-engineer/build-ml-pipeline/
         run: poetry run pytest
+        
+      - name: Lint with flake8 on push.
+        working-directory: ./machine-learning-devops-engineer/build-ml-pipeline/
+        run: |
+          # catch syntax errors
+          poetry run flake8 . --count --select=F7,F8
+

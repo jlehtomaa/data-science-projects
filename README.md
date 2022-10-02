@@ -3,7 +3,7 @@ Collection of data science and machine learning course projects.
 
 ## machine-learning-devops-engineer
 
-Projects for the Machine Learning Devops Engineer Nanodegree by Udacity. `main covered topics highlighted for each project`
+Projects for the Machine Learning Devops Engineer Nanodegree by Udacity.
 
 1. **predict-customer-churn.** Use a Kaggle dataset to predict the churn rate of credit card company customers. `hydra, scikit-learn`
 2. **predict-short-term-rental-prices.** Estimate rental prices from NYC properties. `hydra, scikit-learn, mlflow`

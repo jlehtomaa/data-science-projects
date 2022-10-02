@@ -24,8 +24,8 @@ def fixture_config():
 @pytest.fixture(name="raw_data", scope="module")
 def fixture_raw_data(config):
     """Fixture for experiment raw dataset."""
-    path = to_absolute_path(config["paths"]["raw_data"])
-    return load_data(path)
+    #path = to_absolute_path()
+    return load_data(config["paths"]["raw_data"])
 
 
 def test_data_exists(raw_data):

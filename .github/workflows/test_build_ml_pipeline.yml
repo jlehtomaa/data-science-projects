@@ -35,7 +35,7 @@ jobs:
           python-version: '3.9'
           cache: 'poetry'
           cache-dependency-path: |
-            ./machine-learning-devops-engineer/build-ml-pipeline//pyproject.toml
-            ./machine-learning-devops-engineer/build-ml-pipeline//poetry.lock
+            ./machine-learning-devops-engineer/build-ml-pipeline/pyproject.toml
+            ./machine-learning-devops-engineer/build-ml-pipeline/poetry.lock
       - run: poetry install
       - run: poetry run pytest

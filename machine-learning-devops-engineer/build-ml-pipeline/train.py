@@ -43,6 +43,7 @@ def main(cfg: DictConfig) -> None:
     preds = do_inference(model, x_test)
     metrics = compute_metrics(y_test, preds)
     logging.info("precision: %s, recall: %s, fbeta: %s", *metrics)
+    logging.info("Finished.")
 
 
 if __name__ == "__main__":

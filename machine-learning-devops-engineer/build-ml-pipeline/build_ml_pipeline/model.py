@@ -1,10 +1,15 @@
+"""
+Individual functionalities for data processing and model training.
+"""
+from typing import Optional, List, Tuple
 import pandas as pd
 import numpy as np
-from typing import Optional, List, Tuple
+from omegaconf import DictConfig
 from sklearn.base import ClassifierMixin
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.preprocessing import LabelBinarizer, OneHotEncoder
 from sklearn.metrics import fbeta_score, precision_score, recall_score
+from build_ml_pipeline.utils import load, hyphen_to_underscore
 
 
 def process_data(
@@ -49,8 +54,8 @@ def process_data(
         Trained LabelBinarizer if training=True, otherwise the binarizer passed in.
     """
 
-    # Remove spaces, and turn hyphens into underscores.
-    data.columns = [col.replace("-", "_").strip() for col in data.columns]
+    # Clean up column names.
+    data.columns = [hyphen_to_underscore(col) for col in data.columns]
 
     if cat_features is None:
         cat_features = []
@@ -146,4 +151,55 @@ def compute_metrics(
     fbeta = fbeta_score(labels, preds, beta=1, zero_division=1)
     precision = precision_score(labels, preds, zero_division=1)
     recall = recall_score(labels, preds, zero_division=1)
-    return precision, recall, fbeta
+    return [round(res, 4) for res in [precision, recall, fbeta]]
+
+def compute_slice_metrics(test_data: pd.DataFrame, cfg: DictConfig) -> None:
+    """Compute model performance on individual slices of the test data.
+
+    Arguments
+    ---------
+    test_data
+        The raw test split of the full dataset.
+    cfg
+        The dict-parsed config file. Needs to contain paths for loading the
+        model, the label column, and a path for storing the slice metrics.
+    """
+
+    model, encoder, lab_bin = load(cfg["paths"]["model"])
+    cat_features = cfg["data"]["cat_features"]
+
+    x_test, y_test, _, _ = process_data(
+        data=test_data,
+        cat_features=cat_features,
+        label=cfg["data"]["label"],
+        training=False,
+        encoder=encoder,
+        lab_bin=lab_bin)
+
+    # E.g. for 'education' in cat_features, compute model metrics for each
+    # slice of data that has a particular value for education.
+    metrics_list = []
+    for feature in cat_features: # education, ...
+        for category in test_data[feature].unique(): # masters, doctorate, ...
+
+            indx = test_data[feature] == category
+
+            # Make sure that the category is represented in the test data slice.
+            if not any(indx):
+                continue
+
+            preds = model.predict(x_test[indx])
+            precision, recall, fbeta = compute_metrics(y_test[indx], preds)
+
+            res = (
+                f"{feature} - {category}: "
+                f"precision {precision} recall {recall} fbeta {fbeta}"
+            )
+
+            metrics_list.append(res)
+
+    # Dump results to a file.
+    outfile = cfg["paths"]["slice_metrics"]
+    with open(outfile, "w", encoding="utf-8") as file:
+        for item in metrics_list:
+            file.write(item + "\n")

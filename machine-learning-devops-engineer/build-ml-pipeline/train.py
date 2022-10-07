@@ -10,7 +10,8 @@ from build_ml_pipeline.utils import load, save, load_data
 from build_ml_pipeline.model import (process_data,
                                      train_model,
                                      do_inference,
-                                     compute_metrics)
+                                     compute_metrics,
+                                     compute_slice_metrics)
 
 log = logging.getLogger(__name__)
 
@@ -45,12 +46,16 @@ def main(cfg: DictConfig) -> None:
     log.info("Saving model and encoders.")
     save(model, encoder, lab_bin, cfg["paths"]["model"])
 
-    log.info("Calculating performance metrics.")
-    model, encoder, lab_bin = load(cfg["paths"]["model"])
+    log.info("Calculating overall performance metrics.")
     preds = do_inference(model, x_test)
     metrics = compute_metrics(y_test, preds)
-    logging.info("precision: %s, recall: %s, fbeta: %s", *metrics)
-    logging.info("Finished.")
+    log.info("precision: %s, recall: %s, fbeta: %s", *metrics)
+
+    log.info("Calculating slice performance metrics.")
+    compute_slice_metrics(test_data=test, cfg=cfg)
+    log.info("Saved slice metrics to %s", cfg["paths"]["slice_metrics"])
+
+    log.info("Finished.")
 
 
 if __name__ == "__main__":

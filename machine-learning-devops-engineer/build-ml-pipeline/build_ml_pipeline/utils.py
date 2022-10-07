@@ -1,11 +1,28 @@
+"""
+Collection of helper functions.
+"""
+
 import os
+from typing import Tuple
 import yaml
 import pandas as pd
 import joblib
-from typing import Tuple
 from sklearn.base import BaseEstimator
 from sklearn.preprocessing import LabelBinarizer, OneHotEncoder
 
+def hyphen_to_underscore(field_name: str) -> str:
+    """Replace hyphens in a string with an underscore.
+
+    Arguments
+    ---------
+    field_name
+        Original string
+
+    Returns
+    -------
+    Modified string.
+    """
+    return f"{field_name}".replace("-", "_")
 
 def load_data(path: str) -> pd.DataFrame:
     """ Loads a csv file to a dataframe.

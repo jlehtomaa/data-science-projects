@@ -1,7 +1,7 @@
 paths:
-  raw_data: ./data/census.csv
   model: ./model
-  metrics: ./metrics
+  raw_data: ./data/census.csv
+  slice_metrics: ./metrics/slice_output.txt
 
 data:
   label: salary

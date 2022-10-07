@@ -48,6 +48,10 @@ def process_data(
     lab_bin:
         Trained LabelBinarizer if training=True, otherwise the binarizer passed in.
     """
+
+    # Remove spaces, and turn hyphens into underscores.
+    data.columns = [col.replace("-", "_").strip() for col in data.columns]
+
     if cat_features is None:
         cat_features = []
 

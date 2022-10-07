@@ -1,4 +1,5 @@
 import os
+import yaml
 import pandas as pd
 import joblib
 from typing import Tuple
@@ -51,3 +52,20 @@ def load(
     lab_bin = joblib.load(os.path.join(path, "lab_bin.pkl"))
 
     return model, encoder, lab_bin
+
+def read_yaml(path: str) -> dict:
+    """ Read a yaml file into a python dictionary.
+
+    Arguments
+    ---------
+    path:
+        Path to the yaml file.
+
+    Returns
+    -------
+    Parsed file content
+    """
+    with open(path) as file:
+        data = yaml.safe_load(file)
+
+    return data

@@ -16,7 +16,10 @@ def main(cfg: DictConfig) -> None:
 
     log.info("Loading raw data.")
     data = load_data(cfg["paths"]["raw_data"])
-    train, test = train_test_split(data, test_size=cfg["training"]["test_size"])
+    train, test = train_test_split(
+        data,
+        test_size=cfg["training"]["test_size"],
+        random_state=cfg["training"]["random_state"])
 
     log.info("Processing train/test data.")
     x_train, y_train, encoder, lab_bin = process_data(

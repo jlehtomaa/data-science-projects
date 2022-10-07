@@ -1,18 +1,20 @@
 paths:
   raw_data: ./data/census.csv
   model: ./model
+  metrics: ./metrics
+
 
 data:
   label: salary
   cat_features:
     - workclass
     - education
-    - marital-status
+    - marital_status
     - occupation
     - relationship
     - race
     - sex
-    - native-country
+    - native_country
 
 random_forest:
   n_jobs: -1
@@ -21,4 +23,9 @@ random_forest:
 
 training:
   test_size: 0.2
+  random_state: 42
   
+api:
+  host: 127.0.0.1
+  port: 8000
+  url: http://${api.host}:${api.port}/predict

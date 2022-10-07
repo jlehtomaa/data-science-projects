@@ -17,6 +17,7 @@ uvicorn = "^0.18.3"
 hydra-core = "^1.2.0"
 flake8 = "^5.0.4"
 joblib = "^1.2.0"
+PyYAML = "^6.0"
 
 [tool.poetry.dev-dependencies]
 

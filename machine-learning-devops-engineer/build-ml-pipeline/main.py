@@ -27,6 +27,7 @@ class ModelInput(BaseModel):
     hours_per_week: int
     native_country: str
 
+    # Write an example instance for the fastAPI docs.
     class Config:
         schema_extra = {
             "example": {
@@ -59,31 +60,13 @@ async def run():
 @app.post("/predict")
 async def predict_salary(feature: ModelInput):
 
-    # Get the feature as a dataframe.
-    data = dict(
-        age=feature.age,
-        workclass=feature.workclass,
-        fnlgt=feature.fnlgt,
-        education=feature.education,
-        education_num=feature.education_num,
-        marital_status=feature.marital_status,
-        occupation=feature.occupation,
-        relationship=feature.relationship,
-        race=feature.race,
-        sex=feature.sex,
-        capital_gain=feature.capital_gain,
-        capital_loss=feature.capital_loss,
-        hours_per_week=feature.hours_per_week,
-        native_country=feature.native_country
-    )
-
     feat, _, _, _ = process_data(
-        pd.DataFrame(data, index=[0]),
+        pd.DataFrame(feature.dict(), index=[0]),
         CONF["data"]["cat_features"],
         training=False,
         encoder=ENCODER,
         lab_bin=LAB_BIN)
-    #print(feat.shape)
+
     pred = do_inference(MODEL, feat)
     pred = LAB_BIN.inverse_transform(pred)[0]
 

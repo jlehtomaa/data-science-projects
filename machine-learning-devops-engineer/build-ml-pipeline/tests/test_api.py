@@ -1,16 +1,20 @@
-import json 
+"""
+This model runs unit tests for the basic app functionalities.
+"""
 from fastapi.testclient import TestClient
-
 from main import app
 
 client = TestClient(app)
 
 def test_get():
-
+    """Test root access"""
     resp = client.get("/")
     assert resp.status_code == 200
+    assert resp.json() == ("Welcome to the app. "
+                           "Use the /predict to infer salary levels.")
 
-def test_high_salary():
+def test_post_high_salary():
+    """Test with a feature for a high-salary individual."""
 
     post = dict(
         age=50,
@@ -28,11 +32,13 @@ def test_high_salary():
         hours_per_week=50,
         native_country="United-States"
     )
+
     resp = client.post("/predict", json=post)
     assert resp.status_code == 200
     assert resp.json() == {"Predicted salary": ">50K"}
 
-def test_low_salary():
+def test_post_low_salary():
+    """Test with a feature for a low-salary individual."""
 
     post = dict(
         age=50,
@@ -50,6 +56,7 @@ def test_low_salary():
         hours_per_week=30,
         native_country="United-States"
     )
+
     resp = client.post("/predict", json=post)
     assert resp.status_code == 200
     assert resp.json() == {"Predicted salary": "<=50K"}

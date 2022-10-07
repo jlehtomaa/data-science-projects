@@ -3,7 +3,6 @@ paths:
   model: ./model
   metrics: ./metrics
 
-
 data:
   label: salary
   cat_features:

@@ -1,3 +1,7 @@
+"""
+This script trains a simple scikit-learn random forest classifier and
+saves it to the ./model folder.
+"""
 import logging
 import hydra
 from sklearn.model_selection import train_test_split
@@ -10,9 +14,9 @@ from build_ml_pipeline.model import (process_data,
 
 log = logging.getLogger(__name__)
 
-
 @hydra.main(version_base=None, config_path="./conf", config_name="config")
 def main(cfg: DictConfig) -> None:
+    """Train the model."""
 
     log.info("Loading raw data.")
     data = load_data(cfg["paths"]["raw_data"])

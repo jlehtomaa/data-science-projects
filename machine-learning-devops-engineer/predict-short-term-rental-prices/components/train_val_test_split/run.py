@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 """
-This script splits the provided dataframe in test and remainder
+This script splits the provided dataframe in test and remainder.
 """
 import argparse
 import logging
@@ -14,7 +14,7 @@ logging.basicConfig(level=logging.INFO, format="%(asctime)-15s %(message)s")
 logger = logging.getLogger()
 
 
-def go(args):
+def main(args):
 
     run = wandb.init(job_type="train_val_test_split")
     run.config.update(args)
@@ -69,4 +69,4 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
-    go(args)
+    main(args)

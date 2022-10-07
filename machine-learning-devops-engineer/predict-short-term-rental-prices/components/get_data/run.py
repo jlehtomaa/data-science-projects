@@ -14,7 +14,7 @@ logging.basicConfig(level=logging.INFO, format="%(asctime)-15s %(message)s")
 logger = logging.getLogger()
 
 
-def go(args):
+def main(args):
 
     run = wandb.init(job_type="download_file")
     run.config.update(args)
@@ -45,4 +45,4 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
-    go(args)
+    main(args)

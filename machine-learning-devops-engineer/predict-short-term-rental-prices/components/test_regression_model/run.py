@@ -1,6 +1,6 @@
-#!/usr/bin/env python
 """
-This step takes the best model, tagged with the "prod" tag, and tests it against the test dataset
+This step takes the best model, tagged with the "prod" tag, and tests it
+against the test dataset.
 """
 import argparse
 import logging
@@ -9,14 +9,12 @@ import mlflow
 import pandas as pd
 from sklearn.metrics import mean_absolute_error
 
-from wandb_utils.log_artifact import log_artifact
-
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)-15s %(message)s")
 logger = logging.getLogger()
 
 
-def go(args):
+def main(args):
 
     run = wandb.init(job_type="test_model")
     run.config.update(args)
@@ -70,4 +68,4 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
-    go(args)
+    main(args)

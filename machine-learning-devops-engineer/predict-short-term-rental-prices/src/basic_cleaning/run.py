@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 """
 Download from W&B the raw dataset and apply some basic data cleaning,
 exporting the result to a new artifact
@@ -19,13 +18,7 @@ def main(args):
     run = wandb.init(job_type="basic_cleaning")
     run.config.update(args)
 
-    # Download input artifact. This will also log that this script is using this
-    # particular version of the artifact
-    # artifact_local_path = run.use_artifact(args.input_artifact).file()
-
-    ######################
-    #   YOUR CODE HERE   #
-    ######################
+    # Download input artifact.
     logger.info("Downloading artifact")
     local_path = wandb.use_artifact(args.input_artifact).file()
     df = pd.read_csv(local_path)
@@ -34,7 +27,6 @@ def main(args):
     idx_price = df["price"].between(args.min_price, args.max_price)
     idx_coord = df['longitude'].between(-74.25, -73.50) & df['latitude'].between(40.5, 41.2)
     df = df[idx_price & idx_coord].copy()
-
 
     # Convert last_review to datetime
     df["last_review"] = pd.to_datetime(df["last_review"])
@@ -49,7 +41,6 @@ def main(args):
     artifact.add_file(args.output_artifact)
     run.log_artifact(artifact)
     os.remove(args.output_artifact)
-
 
 
 if __name__ == "__main__":

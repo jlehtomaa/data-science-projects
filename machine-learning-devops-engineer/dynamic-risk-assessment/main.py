@@ -4,10 +4,12 @@ This script implements an automated ingestion/re-training/re-deployment flow.
 import os
 import pickle
 import logging
+import argparse
 from dynamic_risk_assessment.scoring import score_model
-from dynamic_risk_assessment.training import process_data
+from dynamic_risk_assessment.training import process_data, train_model
 from dynamic_risk_assessment.ingestion import merge_dataframes
-from dynamic_risk_assessment.utils import load_config, list_csv_files
+from dynamic_risk_assessment.utils import load_config, check_data
+from dynamic_risk_assessment.deployment import store_model_into_pickle
 
 logging.basicConfig(filename='logfile',
                     filemode='w',
@@ -18,43 +20,17 @@ logging.basicConfig(filename='logfile',
 
 log = logging.getLogger(__name__)
 
-def check_data(cfg: dict) -> bool:
-    """Check if the data folder has new files.
-
-    Arguments
-    ---------
-    cfg:
-        Model configuration setup.
-
-    Returns
-    -------
-    data_up_to_date:
-        True if no new data were found, else False.
-    """
-
-    # Read the old ingestion records:
-    with open(cfg["paths"]["ingested_record"], "r", encoding="utf-8") as file:
-        record = file.readlines()
-        record = [line.rstrip() for line in record] # strip \n from the end.
-
-    # Read the contents of the source data folder
-    source = list_csv_files(cfg["paths"]["input_data"])
-
-    # Compare the datasets.
-    data_up_to_date = set(source).issubset(set(record))
-
-    return data_up_to_date
-
-
-def main(cfg):
+def main(args):
     """Main automation loop."""
+
+    cfg = load_config(args.config_path)
 
     log.info("Checking for new data.")
     data_ok = check_data(cfg)
 
-    if data_ok:
-        log.info("Data up to date. Exiting.")
-        return
+    # if data_ok:
+    #     log.info("Data up to date. Exiting.")
+    #     return
 
     # Read in the new data.
     log.info("Found new data. Re-merging a new dataset.")
@@ -81,32 +57,37 @@ def main(cfg):
     log.info("Checking for model drift.")
     has_model_drift = (new_score < old_score)
 
-    if not has_model_drift:
-        log.info("No model drift detected. Exiting.")
-        return
+    # if not has_model_drift:
+    #     log.info("No model drift detected. Exiting.")
+    #     return
 
     log.info("Detected model drift. Starting the re-training pipeline.")
-    root = "python dynamic_risk_assessment"
-    # Re-train.
-    os.system(f"{root}/training.py")
 
-    # Diagnostics.
-    os.system(f"{root}/diagnostics.py")
+    # Re-train model.
+    x_train, y_train = process_data(
+        new_data, cfg["data"]["features"], cfg["data"]["label"])
 
-    # Re-deployment.
-    os.system(f"{root}/deployment.py")
+    train_model(
+        x_train, y_train, cfg["model"]["params"], cfg["paths"]["trained_model"])
 
-    # Reporting.
-    os.system(f"{root}/reporting.py")
+    # Re-deploy.
+    store_model_into_pickle(cfg["paths"])
 
-    # API calls.
-    os.system(f"{root}/apicalls.py")
 
     log.info("Finished.")
 
 
 if __name__ == "__main__":
 
-    CONFIG_PATH = "./conf/config.json"
-    CFG = load_config(CONFIG_PATH)
-    main(CFG)
+    parser = argparse.ArgumentParser(description="Score the model.")
+
+    parser.add_argument(
+        "--config_path",
+        type=str,
+        required=False,
+        help="Config file path",
+        default="./conf/config.json")
+
+    args = parser.parse_args()
+
+    main(args)

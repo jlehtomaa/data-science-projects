@@ -26,8 +26,8 @@ API endpoint: summary
 API endpoint: diagnostics
 {
   "Execution time": [
-    0.4151,
-    0.8173
+    0.41,
+    0.8953
   ],
   "Missing share": [
     0.0,
@@ -36,5 +36,5 @@ API endpoint: diagnostics
     0.0,
     0.0
   ],
-  "Outdated": "Package    Version Latest Type\n---------- ------- ------ -----\nnumpy      1.23.3  1.23.4 wheel\npip        21.1.1  22.3   wheel\nsetuptools 56.0.0  65.5.0 wheel\n"
+  "Outdated": "Package    Version Latest Type\n---------- ------- ------ -----\nnumpy      1.23.3  1.23.4 wheel\npip        21.1.1  22.3   wheel\npytz       2022.4  2022.5 wheel\nsetuptools 56.0.0  65.5.0 wheel\n"
 }

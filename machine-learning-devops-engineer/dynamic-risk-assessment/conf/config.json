@@ -1,4 +1,8 @@
 {
+    "app": {
+        "url": "http://127.0.0.1:8000"
+    },
+
     "paths": {
         "input_data": "source_data",
         "ingested_data": "ingested_data/final_data.csv",
@@ -8,9 +12,9 @@
         "deployed_score": "production_deployment/latest_score.txt",
         "deployed_model": "production_deployment/trained_model.pkl",
         "deployed_record": "production_deployment/ingested_files.txt",
-        "reports": "models/confmatrix2.png",
+        "reports": "models/confmatrix.png",
         "test_data": "test_data/test_data.csv",
-        "api_returns": "models/api_returns2.txt"
+        "api_returns": "models/api_returns.txt"
     },
 
     "data": {

@@ -72,7 +72,6 @@ def main(args):
     # Re-deploy.
     store_model_into_pickle(cfg["paths"])
 
-
     log.info("Finished.")
 
 

@@ -1,11 +1,4 @@
-"""This script copies trained model components into deployment folder.
-
-Run from the repository root as:
-python dynamic_risk_assessment/deployment.py
-
-Additionally, specify the config file by using:
-python dynamic_risk_assessment/deployment.py --config_path conf/config.json
-"""
+"""This script copies trained model components into deployment folder."""
 import shutil
 
 

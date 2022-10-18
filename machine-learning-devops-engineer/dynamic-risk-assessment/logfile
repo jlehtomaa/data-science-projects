@@ -1,0 +1,5 @@
+12:25:05, __main__ INFO Checking for new data.
+12:25:05, __main__ INFO Found new data. Re-merging a new dataset.
+12:25:05, __main__ INFO Checking for model drift.
+12:25:05, __main__ INFO Detected model drift. Starting the re-training pipeline.
+12:25:21, __main__ INFO Finished.

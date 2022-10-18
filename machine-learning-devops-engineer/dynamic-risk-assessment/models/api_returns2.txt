@@ -1,0 +1,40 @@
+
+
+API endpoint: index
+Hello!
+
+
+API endpoint: pred
+{
+  "Labels": "[0 0 1 1 0 0 0 1 1 1 0 0 1 0 1 1 0 0 1 1 0 1 0 1 0 1]",
+  "Predictions": "[1 0 1 1 0 1 0 1 1 0 0 0 1 0 1 1 1 1 1 1 1 1 1 1 0 1]"
+}
+
+
+API endpoint: score
+{
+  "F1 score": "0.5714285714285715"
+}
+
+
+API endpoint: summary
+{
+  "Summary statistics": "[{'lastmonth_activity': {'mean': 5625.923, '50%': 425.0, 'std': 19444.775}}, {'lastyear_activity': {'mean': 763.538, '50%': 97.5, 'std': 2016.609}}, {'number_of_employees': {'mean': 457.462, '50%': 99.0, 'std': 800.605}}, {'exited': {'mean': 0.5, '50%': 0.5, 'std': 0.51}}]"
+}
+
+
+API endpoint: diagnostics
+{
+  "Execution time": [
+    0.4151,
+    0.8173
+  ],
+  "Missing share": [
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0
+  ],
+  "Outdated": "Package    Version Latest Type\n---------- ------- ------ -----\nnumpy      1.23.3  1.23.4 wheel\npip        21.1.1  22.3   wheel\nsetuptools 56.0.0  65.5.0 wheel\n"
+}

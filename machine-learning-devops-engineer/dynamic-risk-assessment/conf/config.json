@@ -1,0 +1,50 @@
+{
+    "paths": {
+        "input_data": "source_data",
+        "ingested_data": "ingested_data/final_data.csv",
+        "ingested_record": "ingested_data/ingested_files.txt",
+        "trained_model": "models/trained_model.pkl",
+        "model_score": "models/latest_score.txt",
+        "deployed_score": "production_deployment/latest_score.txt",
+        "deployed_model": "production_deployment/trained_model.pkl",
+        "deployed_record": "production_deployment/ingested_files.txt",
+        "reports": "models/confmatrix2.png",
+        "test_data": "test_data/test_data.csv",
+        "api_returns": "models/api_returns2.txt"
+    },
+
+    "data": {
+        "features": [
+            "lastmonth_activity",
+            "lastyear_activity",
+            "number_of_employees"
+        ],
+        "label": "exited"
+    },
+
+    "model": {
+        "params": {
+            "C":1.0,
+            "class_weight": null,
+            "dual": false,
+            "fit_intercept": true,
+            "intercept_scaling": 1.0,
+            "max_iter": 100,
+            "penalty": "l2",
+            "verbose": 0,
+            "tol": 0.00001
+        }
+    },
+    
+    "diagnostics": {
+        "statistics": [
+            "mean",
+            "50%",
+            "std"
+        ],
+        "timed_modules": [
+                "./dynamic_risk_assessment/ingestion.py",
+                "./dynamic_risk_assessment/training.py"
+            ]
+    }
+}

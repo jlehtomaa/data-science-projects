@@ -16,7 +16,6 @@ from dynamic_risk_assessment.diagnostics import (model_predictions,
                                                  list_outdated_packages)
 
 app = Flask(__name__)
-app.secret_key = '1652d576-484a-49fd-913a-6879acfa6ba4'
 
 with open("./conf/config.json", "r", encoding="utf-8") as config_path:
     config = json.load(config_path)

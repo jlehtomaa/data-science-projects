@@ -1,7 +1,6 @@
 """
 This script implements an automated ingestion/re-training/re-deployment flow.
 """
-import os
 import pickle
 import logging
 import argparse
@@ -28,9 +27,9 @@ def main(args):
     log.info("Checking for new data.")
     data_ok = check_data(cfg)
 
-    # if data_ok:
-    #     log.info("Data up to date. Exiting.")
-    #     return
+    if data_ok:
+        log.info("Data up to date. Exiting.")
+        return
 
     # Read in the new data.
     log.info("Found new data. Re-merging a new dataset.")
@@ -57,9 +56,9 @@ def main(args):
     log.info("Checking for model drift.")
     has_model_drift = (new_score < old_score)
 
-    # if not has_model_drift:
-    #     log.info("No model drift detected. Exiting.")
-    #     return
+    if not has_model_drift:
+        log.info("No model drift detected. Exiting.")
+        return
 
     log.info("Detected model drift. Starting the re-training pipeline.")
 
